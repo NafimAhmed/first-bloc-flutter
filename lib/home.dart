@@ -1,49 +1,64 @@
-import 'package:bloc_first/cubit/counter_cubit.dart';
-import 'package:bloc_first/cubit/counter_cubit_state.dart';
-// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+import 'bloc/counter_bloc.dart';
 
-  @override
-  State<Home> createState() => _HomeState();
-}
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
-class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return BlocBuilder<CounterCubit,CounterCubitState>(builder: (context,state){
-      return Center(
+    final CounterBloc counterBloc = BlocProvider.of<CounterBloc>(context);
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Counter'),
+      ),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-
-
-            (state is CounterValueUpdate)?Text(state.counter.toString()):Text('0'),
-
-
-            Row(
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    context.read<CounterCubit>().CounterIncrease();
-                  },
-                  child: Icon(Icons.add),
-                ),
-                FloatingActionButton(
-                  onPressed: () {
-                    context.read<CounterCubit>().CounterDecrease();
-                  },
-                  child: Icon(Icons.remove),
-                ),
-              ],
+          children: <Widget>[
+            BlocBuilder<CounterBloc, int>(
+              bloc: counterBloc,
+              builder: (context, counter) {
+                return Text(
+                  '$counter',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                );
+              },
             ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  color: Colors.indigo,
+                  child: IconButton(
+                      onPressed: () {
+                        counterBloc.add(CounterDecremented());
+                      },
+                      icon: const Icon(
+                        Icons.remove,
+                        color: Colors.white,
+                      )),
+                ),
+                const SizedBox(width: 20),
+                Container(
+                  color: Colors.indigo,
+                  child: IconButton(
+                      onPressed: () {
+                        counterBloc.add(CounterIncremented());
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      )),
+                )
+              ],
+            )
           ],
         ),
-      );
-    });
+      ),
+    );
   }
 }
